@@ -1,25 +1,54 @@
-import logo from './logo.svg';
+import React, {Component} from "react"
+import Card from "./components/card/card";
+import Input from "./components/search-box/input";
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
+
+
+class App extends Component {
+  constructor(){
+    super();
+
+    this.state = {
+      students: [],
+    searchField: ''}
+  }
+
+componentDidMount() {
+  fetch('http://jsonplaceholder.typicode.com/users')
+  .then(response => response.json())
+  .then(users => this.setState({students: users}))
+}
+  render(){
+    const {students, searchField} = this.state
+    const filteredStudent = students.filter(student => 
+      student.name.toLowerCase().includes(searchField.toLowerCase()))
+      
+      const onChangeHandler = (event) => {
+        return this.setState({searchField: event.target.value})
+      }
+
+
+    return (
+      <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <Input onChangeHandler={onChangeHandler}/>
+        
+        
+        {filteredStudent.map(each => {
+
+          return <React.Fragment><Card key={each.name}
+                       image={`https://robohash.org/set_set2/bgset_bg${each.id}/${each.id}`}
+                       alt={each.name}
+                       name={each.name}></Card>
+                       
+                       </React.Fragment>
+        }) }
+                
       </header>
     </div>
-  );
+    )
+  }
 }
 
 export default App;
